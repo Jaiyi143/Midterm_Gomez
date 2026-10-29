@@ -1,3 +1,22 @@
+/*======================================================
+    BIDIRECTIONAL IR SENSOR COUNTER WITH 7 SEGMENT DISPLAY
+========================================================
+Description:
+  This program reads digital signals from two infrared
+  obstacle sensors to count detected objects bidirectionally.
+  One sensor increments the count up to 99, while the other
+  sensor decrements the count down to 0. A push button resets
+  the count to 3. The system outputs the real-time count
+  onto a dual common-cathode 7-segment display.
+
+Programmer: 
+  Sergie D. Gomez
+
+Date: 
+  28 October 2026
+------------------------------------------------------*/
+```
+
 const uint8_t IR_UP_PIN = 22;
 const uint8_t IR_DOWN_PIN = 23;
 const uint8_t RESET_PIN = 13;
