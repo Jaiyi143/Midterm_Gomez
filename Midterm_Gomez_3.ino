@@ -52,7 +52,7 @@ void loop() {
   int downState = digitalRead(IR_DOWN_PIN);
   int resetState = digitalRead(RESET_PIN);
 
-  // Reset button pressed: set count to 3.
+  
   if (resetState == LOW && lastResetState == HIGH) {
     Number_of_Object = 3;
     decoder(Number_of_Object);
@@ -62,7 +62,7 @@ void loop() {
 
   lastResetState = resetState;
 
-  // Ignore the sensors while the reset button is held.
+    
   if (resetState == LOW) {
     lastUpState = upState;
     lastDownState = downState;
