@@ -16,28 +16,29 @@ Date:
   28 October 2026
 ------------------------------------------------------*/
 ```
-
 const uint8_t IR_UP_PIN = 22;
 const uint8_t IR_DOWN_PIN = 23;
 const uint8_t RESET_PIN = 13;
 
 const uint8_t TENS_PINS[] = {4, 16, 17, 5, 18, 19, 21};
 const uint8_t ONES_PINS[] = {32, 33, 25, 26, 27, 14, 12};
+
 const uint8_t NUM_SEG7 = sizeof(TENS_PINS) / sizeof(TENS_PINS[0]);
 
-int Number_of_Object = 0;
-int lastUpState = HIGH;
-int lastDownState = HIGH;
-int lastResetState = HIGH;
-
 #include "decoder.h"
+
+int Number_of_Object = 0;
+
+int lastUpState = LOW;
+int lastDownState = LOW;
+int lastResetState = LOW;
 
 void setup() {
   Serial.begin(9600);
 
   pinMode(IR_UP_PIN, INPUT);
   pinMode(IR_DOWN_PIN, INPUT);
-  pinMode(RESET_PIN, INPUT_PULLUP);
+  pinMode(RESET_PIN, INPUT_PULLDOWN);
 
   for (int i = 0; i < NUM_SEG7; i++) {
     pinMode(TENS_PINS[i], OUTPUT);
@@ -52,37 +53,34 @@ void loop() {
   int downState = digitalRead(IR_DOWN_PIN);
   int resetState = digitalRead(RESET_PIN);
 
-  
-  if (resetState == LOW && lastResetState == HIGH) {
+  if (resetState == HIGH) {
     Number_of_Object = 3;
     decoder(Number_of_Object);
-    Serial.println("Reset: count set to 3");
-    delay(200);
   }
-
-  lastResetState = resetState;
-
-    
-  if (resetState == LOW) {
-    lastUpState = upState;
-    lastDownState = downState;
-    return;
-  }
-
-  if (upState == LOW && lastUpState == HIGH) {
-    if (Number_of_Object < 99) Number_of_Object++;
+  else if (upState == HIGH && lastUpState == LOW) {
+    Number_of_Object = (Number_of_Object + 1) % 100;
     decoder(Number_of_Object);
-    Serial.printf("Count up: %d\n", Number_of_Object);
-    delay(200);
-  }
 
-  if (downState == LOW && lastDownState == HIGH) {
-    if (Number_of_Object > 0) Number_of_Object--;
+    Serial.print("Count up: ");
+    Serial.println(Number_of_Object);
+  }
+  else if (downState == HIGH && lastDownState == LOW) {
+    if (Number_of_Object == 0) {
+      Number_of_Object = 99;
+    }
+    else {
+      Number_of_Object = (Number_of_Object - 1) % 100;
+    }
+
     decoder(Number_of_Object);
-    Serial.printf("Count down: %d\n", Number_of_Object);
-    delay(200);
+
+    Serial.print("Count down: ");
+    Serial.println(Number_of_Object);
   }
 
   lastUpState = upState;
   lastDownState = downState;
+  lastResetState = resetState;
+
+  delay(50);
 }
